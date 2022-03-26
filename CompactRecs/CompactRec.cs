@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -123,13 +123,15 @@ namespace TinderAutomator.CompactRecs
                 info |= ProfileInfo.Bio;
             if (User.Photos.Length > 5)
                 info |= ProfileInfo.Photos;
-            if (Recommendation.RGX_SocialMedia.IsMatch(User.Biography))
+            if (Program.RGX_SocialMedia.IsMatch(User.Biography))
                 info |= ProfileInfo.Social_Media;
 
             return User.Birthday.Year.ToString() + ":" +
                 User.Name + ":" +
                 ((int)info).ToString();
-        }/// <summary>
+        }
+        
+        /// <summary>
          /// Swipes on a user in the recommendations.
          /// </summary>
          /// <param name="interaction">The type of swipe.</param>
@@ -187,6 +189,22 @@ namespace TinderAutomator.CompactRecs
                     isMatch = false;
                     return null;
             }
+        }
+
+        private static readonly Random _random = new Random();
+
+        public int GetJudgementTime()
+        {
+            // Just for fun
+            int judgementTime = 500;
+            judgementTime += this.User.Photos.Length * 750;
+            if (!String.IsNullOrWhiteSpace(this.User.Biography))
+            {
+                judgementTime += Math.Min(this.User.Biography.Length, 200) * 20;
+            }
+            judgementTime = Convert.ToInt32(judgementTime * (_random.NextDouble() + 0.5));
+            judgementTime = Math.Max(3000, judgementTime);
+            return judgementTime;
         }
 
         public override string ToString() =>
